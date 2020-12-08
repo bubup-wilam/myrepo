@@ -1,7 +1,12 @@
 # myrepo
 
-hello world
+# Access to Best Practice
 
-This is a line from RStudio
+Best_Practice <- odbcConnect("ODBC_BP", uid = "BPSRAWDATA", pwd = "Loma77")
 
-Final trial
+resultset = sqlFetch(Best_Practice,"BPS_Patients")
+resultset
+
+BA <- sqlQuery(Best_Practice,"Select Firstname, Surname from BPS_Patients")
+BA
+
