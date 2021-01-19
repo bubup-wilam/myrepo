@@ -1,24 +1,35 @@
-# myrepo
+---
+title: "Bubup Wilam"
+output:
+  html_document: default
+  pdf_document: default
+---
 
-#  Best Practice Connection
-
+```{r}
+library(RODBC)
+library(dplyr)
+library(plyr)
 Best_Practice <- odbcConnect("ODBC_BP", uid = "BPSRAWDATA", pwd = "Loma77")
-
-## Tables - Best Practice
 
 Patients = sqlFetch(Best_Practice,"BPS_Patients")
 
-Actions = sqlFetch(Best_Practice,"BPS_Actions")
+Actions = sqlFetch(Best_Practice,"BPS_Actions") 
 
-Alcohol = sqlFetch(Best_Practice,"BPS_Alcohol")
+Alcohol = sqlFetch(Best_Practice,"BPS_Alcohol") 
 
 All_Actions = sqlFetch(Best_Practice,"BPS_All_Actions")
 
-All_History = sqlFetch(Best_Practice,"BPS_History")
+All_History = sqlFetch(Best_Practice,"BPS_All_History")
+
+AllHistory = sqlFetch(Best_Practice,"BPS_AllHistory")
 
 All_Immunisation = sqlFetch(Best_Practice,"BPS_All_Immunisations")
 
+All_Observations = sqlFetch(Best_Practice,"BPS_All_Observations")
+
 Observations = sqlFetch(Best_Practice,"BPS_Observations")
+
+All_PapSmears = sqlFetch(Best_Practice,"BPS_All_PapSmears")
 
 PapSmears = sqlFetch(Best_Practice,"BPS_PapSmears")
 
@@ -26,7 +37,11 @@ Parameters = sqlFetch(Best_Practice,"BPS_Parameters")
 
 All_Parameters = sqlFetch(Best_Practice,"BPS_All_Parameters")
 
+All_Pregnancies = sqlFetch(Best_Practice,"BPS_All_Pregnancies")
+
 Pregnancies = sqlFetch(Best_Practice,"BPS_Pregnancies")
+
+All_Prescriptions = sqlFetch(Best_Practice,"BPS_All_Prescriptions")
 
 Prescriptions = sqlFetch(Best_Practice,"BPS_Prescriptions")
 
@@ -34,7 +49,9 @@ Reminders = sqlFetch(Best_Practice,"BPS_Reminders")
 
 All_Reminders = sqlFetch(Best_Practice,"BPS_All_Reminders")
 
-Requests = sqlFetch(Best_Practice,"BPS_All_Requests")
+All_Requests = sqlFetch(Best_Practice,"BPS_All_Requests")
+
+Requests = sqlFetch(Best_Practice,"BPS_Requests")
 
 Antenatal_Visits = sqlFetch(Best_Practice,"BPS_AntenatalVisits")
 
@@ -78,6 +95,8 @@ Occupation_history = sqlFetch(Best_Practice,"BPS_OccupationHistory")
 
 Patients_Login = sqlFetch(Best_Practice,"BPS_PatientLogin")
 
+Practice_Locations = sqlFetch(Best_Practice,"BPS_PracticeLocations")
+
 Reactions = sqlFetch(Best_Practice,"BPS_Reactions")
 
 Report_Values = sqlFetch(Best_Practice,"BPS_ReportValues")
@@ -93,10 +112,61 @@ Users = sqlFetch(Best_Practice,"BPS_Users")
 Visit_Reason =sqlFetch(Best_Practice,"BPS_VisitReason")
 
 Visits = sqlFetch(Best_Practice,"BPS_Visits")
+```
 
-# Queries
+```{r}
+# Number of Patients / Number of Active Patients
+# Patients table contains details related to the patients with unique Internal ID which is the patient ID in the Best Practice.
+# No. of patients are the same as active patients as they haven't segregated them.
 
-Patients <- sqlQuery(Best_Practice,"Select * from Best_Practice")
-Patients
+Total_Patients <- length(unique(Patients$InternalID))
+Total_Patients
+```               
+```{r}
+# Total number of consultations by clinicians
+Clinician <- count(Visits$DrName)  
+Clinician
 
-A <- sqlQuer
+Clinician %>% group_by %>% summarise(Total= log(sum(freq)))
+```
+
+```{r}
+#Total Number of active patients by clinicians
+Providers <- count(Appointments$Provider)
+Providers
+class(Visits)
+```
+
+
+```{r}
+# Total number of consultations based on the type
+Consultations <- count(Appointments$AppointmentType)
+Consultations
+```
+
+```{r}
+# Summary table for the services based on their description
+Service <- count(Services$DESCRIPTION)
+Service
+```
+
+```{r}
+#Total Number of MBS Item codes 
+Total_MBS_Item <- length(unique(Services$MBSITEM))
+Total_MBS_Item
+
+#Total Number of MBS Item Codes by MBS Item Codes
+MBS_Item <- count(Services$MBSITEM)
+MBS_Item
+```
+
+```{r trial, echo=FALSE} 
+#Trial
+Sessions_Time <- Sessions %>% select(-StartDate,-EndDate,-Day,-Provider)
+Sessions_Time
+
+
+Duration_session <- Sessions_Time %>% mutate_all(funs(./60/60)) %>% select(-Length)
+Duration_session
+
+```
